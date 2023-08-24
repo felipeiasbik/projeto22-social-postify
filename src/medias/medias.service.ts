@@ -11,10 +11,10 @@ import { MediasRepository } from './medias.repository';
 export class MediasService {
   constructor(private readonly mediaRepository: MediasRepository) {}
 
-  async titleUsernameUnics(body: CreateMediaDto) {
+  async titleUsernameUnics(title: string, username: string) {
     const titleUsernameExists = await this.mediaRepository.findTitleMedia(
-      body.title,
-      body.username,
+      title,
+      username,
     );
     if (titleUsernameExists !== null) throw new ConflictException();
     return titleUsernameExists;
@@ -27,7 +27,7 @@ export class MediasService {
   }
 
   async createMedia(body: CreateMediaDto) {
-    await this.titleUsernameUnics(body);
+    await this.titleUsernameUnics(body.title, body.username);
     return this.mediaRepository.createMedia(body);
   }
 
@@ -43,7 +43,7 @@ export class MediasService {
 
   async updateMedia(id: number, body: UpdateMediaDto) {
     await this.mediaExists(id);
-    await this.titleUsernameUnics(body);
+    await this.titleUsernameUnics(body.title, body.username);
     return await this.mediaRepository.updateMedia(id, body);
   }
 
