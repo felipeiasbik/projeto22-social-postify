@@ -7,12 +7,18 @@ import { UpdateMediaDto } from './dto/update-media.dto';
 export class MediasRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findTitleMedia(title: string) {
-    return await this.prisma.media.findFirst({ where: { title } });
-  }
+  async findTitleMedia(title: string, username: string) {
+    const titleCurrent = await this.prisma.media.findFirst({
+      where: { title },
+    });
 
-  async findUsernameMedia(username: string) {
-    return await this.prisma.media.findFirst({ where: { username } });
+    if (titleCurrent !== null) {
+      return await this.prisma.media.findFirst({
+        where: { title: titleCurrent.title, username },
+      });
+    }
+
+    return titleCurrent;
   }
 
   async createMedia(data: CreateMediaDto) {

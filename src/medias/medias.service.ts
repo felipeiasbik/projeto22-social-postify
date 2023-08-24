@@ -12,21 +12,22 @@ export class MediasService {
   constructor(private readonly mediaRepository: MediasRepository) {}
 
   async titleUsernameUnics(body: CreateMediaDto) {
-    const titleExists = await this.mediaRepository.findTitleMedia(body.title);
-    const usernameExists = await this.mediaRepository.findUsernameMedia(
+    const titleUsernameExists = await this.mediaRepository.findTitleMedia(
+      body.title,
       body.username,
     );
-    return { titleExists, usernameExists };
+    if (titleUsernameExists !== null) throw new ConflictException();
+    return titleUsernameExists;
+  }
+
+  async mediaExists(id: number) {
+    const media = await this.mediaRepository.getMedia(id);
+    if (!media) throw new NotFoundException();
+    return media;
   }
 
   async createMedia(body: CreateMediaDto) {
-    const { titleExists, usernameExists } = await this.titleUsernameUnics(body);
-    if (
-      usernameExists !== null ||
-      (titleExists !== null && usernameExists !== null)
-    )
-      throw new ConflictException();
-
+    await this.titleUsernameUnics(body);
     return this.mediaRepository.createMedia(body);
   }
 
@@ -35,29 +36,21 @@ export class MediasService {
   }
 
   async getMedia(id: number) {
-    const media = await this.mediaRepository.getMedia(id);
-    if (!media) throw new NotFoundException();
+    const media = await this.mediaExists(id);
+    console.log(media);
     return media;
   }
 
   async updateMedia(id: number, body: UpdateMediaDto) {
-    const mediaExists = await this.getMedia(id);
-    if (!mediaExists) throw new NotFoundException();
-
-    const { titleExists, usernameExists } = await this.titleUsernameUnics(body);
-    if (
-      usernameExists !== null ||
-      (titleExists !== null && usernameExists !== null)
-    )
-      throw new ConflictException();
-
+    await this.mediaExists(id);
+    await this.titleUsernameUnics(body);
     return await this.mediaRepository.updateMedia(id, body);
   }
 
   async deleteMedia(id: number) {
-    const mediaExists = await this.getMedia(id);
-    if (!mediaExists) throw new NotFoundException();
-
-    return await this.mediaRepository.deleteMedia(id);
+    await this.mediaExists(id);
+    return `A rede ${
+      (await this.mediaRepository.deleteMedia(id)).title
+    } foi deletada.`;
   }
 }
