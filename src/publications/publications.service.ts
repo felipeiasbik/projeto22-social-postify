@@ -54,6 +54,8 @@ export class PublicationsService {
 
   async removePublication(id: number) {
     await this.verifyPublicationId(id);
-    return await this.publicationsRepository.removePublication(id);
+    const deletePublication =
+      await this.publicationsRepository.removePublication(id);
+    return `A publicação de Id ${deletePublication.id} foi removida.`;
   }
 }
