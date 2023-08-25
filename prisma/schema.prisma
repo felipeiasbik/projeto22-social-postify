@@ -14,6 +14,7 @@ model Media {
   id Int @id @default(autoincrement())
   title String
   username String
+  publications Publication[]
 
   @@map("medias")
 }
@@ -23,6 +24,7 @@ model Post {
   title String
   text String
   image String?
+  publications Publication[]
 
   @@map("posts")
 }
@@ -32,6 +34,9 @@ model Publication {
   mediaId Int
   postId Int
   date DateTime @default(now())
+
+  media Media @relation(fields: [mediaId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
 
   @@map("publications")
 }
