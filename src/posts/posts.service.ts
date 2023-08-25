@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -7,23 +7,47 @@ import { PostsRepository } from './posts.repository';
 export class PostsService {
   constructor(private readonly postsRepository: PostsRepository) {}
 
-  createPost(body: CreatePostDto) {
-    return this.postsRepository.createPost(body);
+  async getPostId(id: number) {
+    const postExists = await this.postsRepository.getPost(id);
+    if (!postExists) throw new NotFoundException();
+    return postExists;
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async createPost(body: CreatePostDto) {
+    return await this.postsRepository.createPost(body);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async getPosts() {
+    const returnPosts = await this.postsRepository.getPosts();
+    const mapPosts = returnPosts.map(({ image, ...rest }) =>
+      image === null ? rest : { ...rest, image },
+    );
+    return mapPosts;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async getPost(id: number) {
+    const returnPost = await this.getPostId(id);
+    if (!returnPost) throw new NotFoundException();
+    const { image, ...rest } = returnPost;
+    const finalPost = image === null ? rest : { ...rest, image };
+    return finalPost;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async updatePost(id: number, body: UpdatePostDto) {
+    const { image, ...rest } = body;
+    await this.getPostId(id);
+
+    const returnPost = await this.postsRepository.updatePost(
+      id,
+      !image ? { ...rest, image: null } : body,
+    );
+    return returnPost && !returnPost.image ? rest : { ...rest, image };
+  }
+
+  async deletePost(id: number) {
+    await this.getPostId(id);
+
+    const post = await this.postsRepository.deletePost(id);
+    return `O post de ID ${post.id} foi removido com sucesso!`;
   }
 }

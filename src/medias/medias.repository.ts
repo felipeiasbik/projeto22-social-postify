@@ -26,7 +26,7 @@ export class MediasRepository {
   }
 
   async getMedias() {
-    return await this.prisma.media.findMany();
+    return await this.prisma.media.findMany({ orderBy: { id: 'asc' } });
   }
 
   async getMedia(id: number) {
