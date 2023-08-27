@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
@@ -21,8 +22,11 @@ export class PublicationsController {
   }
 
   @Get()
-  async getPublications() {
-    return await this.publicationsService.getPublications();
+  async getPublications(
+    @Query('published') published: string,
+    @Query('after') after: string,
+  ) {
+    return await this.publicationsService.getPublications(published, after);
   }
 
   @Get(':id')

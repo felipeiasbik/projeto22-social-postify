@@ -35,7 +35,12 @@ export class PublicationsService {
     return await this.publicationsRepository.createPublication(body);
   }
 
-  async getPublications() {
+  async getPublications(published: string, after: string) {
+    if (published || after)
+      return await this.publicationsRepository.getPublicationsPublished(
+        published,
+        after,
+      );
     return await this.publicationsRepository.getPublications();
   }
 
