@@ -42,7 +42,6 @@ export class MediasService {
 
   async getMedia(id: number) {
     const media = await this.mediaExists(id);
-    console.log(media);
     return media;
   }
 

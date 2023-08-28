@@ -13,21 +13,18 @@ export class PublicationsRepository {
 
   async getPublicationsPublished(published: string, after: string) {
     if (published === 'true' && !after) {
-      console.log('1, ' + published, after, new Date());
       return await this.prisma.publication.findMany({
         where: { date: { lt: new Date() } },
         orderBy: { date: 'asc' },
       });
     }
     if (published === 'false' && !after) {
-      console.log('2, ' + published, after, new Date());
       return await this.prisma.publication.findMany({
         where: { date: { gt: new Date() } },
         orderBy: { date: 'asc' },
       });
     }
     if (published === 'true' && after.length > 0) {
-      console.log('3, ' + published, after, new Date());
       return await this.prisma.publication.findMany({
         where: {
           date: {
@@ -39,7 +36,6 @@ export class PublicationsRepository {
       });
     }
     if (published === 'false' && after.length > 0) {
-      console.log('4, ' + published, after, new Date());
       return await this.prisma.publication.findMany({
         where: {
           date: {

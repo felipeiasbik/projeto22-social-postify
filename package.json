@@ -22,6 +22,7 @@
     "test:e2e": "npm run test:load-envs -- jest -- --runInBand --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "*",
